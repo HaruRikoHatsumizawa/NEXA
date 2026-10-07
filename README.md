@@ -1,20 +1,24 @@
 # NEXA
 
-Versão Cloudflare do projeto Nexus, preservando a interface e as principais funções do projeto original.
+Cópia do projeto Nexus adaptada para Cloudflare.
 
-- Cloudflare Workers no lugar do Flask.
-- D1 para dados persistentes.
-- Excel é lido no navegador com SheetJS.
-- Sem R2.
-- Login administrativo obrigatório para o painel.
-- Resumo financeiro, Budget, Comparativo anual, Comparar planilhas e Energia ESP32.
-- Banco de Dados para consultar os dados salvos e gerar novamente um .xlsx.
+A interface e o fluxo do Nexus foram preservados. As únicas mudanças estruturais necessárias são:
+- Flask -> Cloudflare Workers.
+- pandas/openpyxl -> SheetJS no navegador para ler/analisar Excel.
+- memória do Flask -> Cloudflare D1.
+- sessão Flask -> cookie HttpOnly assinado.
+- arquivos Excel não precisam de R2: o conteúdo estruturado é salvo no D1 e pode ser reconstruído/exportado no navegador.
 
 ## Configuração
 
-1. Crie um D1 chamado `nexa-db` e coloque o ID em `wrangler.toml`.
-2. Execute `npx wrangler d1 execute nexa-db --remote --file=schema.sql`.
-3. Configure `ADMIN_USER`, `ADMIN_PASSWORD` e `SESSION_SECRET` como secrets.
-4. Execute `npm install` e `npm run deploy`.
+1. Crie um D1 chamado `nexa-db`.
+2. Coloque o ID do D1 em `wrangler.toml`.
+3. Execute `npx wrangler d1 execute nexa-db --remote --file=schema.sql`.
+4. Configure os secrets:
+   `npx wrangler secret put ADMIN_USER`
+   `npx wrangler secret put ADMIN_PASSWORD`
+   `npx wrangler secret put SESSION_SECRET`
+5. `npm install`
+6. `npm run deploy`
 
-O Excel original não é armazenado como arquivo: seus dados são persistidos no D1 e podem ser reconstruídos em uma nova planilha quando necessário.
+O endpoint `POST /api/energia/leitura` continua público para permitir que o ESP32 envie telemetria sem uma sessão do navegador.
