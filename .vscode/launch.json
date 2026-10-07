@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "NEXA — Cloudflare Worker",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}",
+      "serverReadyAction": {
+        "pattern": "Ready on http://127.0.0.1:([0-9]+)",
+        "uriFormat": "http://127.0.0.1:%s",
+        "action": "openExternally"
+      }
+    }
+  ]
+}
