@@ -1,8 +1,8 @@
 const MAX_AGE=28800;
 const j=(d,s=200)=>new Response(JSON.stringify(d),{status:s,headers:{'content-type':'application/json;charset=utf-8'}});
-async function hmac(v,secret){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const b=await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(v));return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'')}
+async function hmac(v,secret){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);const b=await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(v));return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 async function session(env){const p=btoa(JSON.stringify({u:env.ADMIN_USER,e:Date.now()+MAX_AGE*1000}));return p+'.'+await hmac(p,env.SESSION_SECRET)}
-async function guard(req,env){const m=(req.headers.get('Cookie')||'').match(/(?:^|;\\s*)nexa_session=([^;]+)/);if(!m)return j({erro:'Faça login para continuar.'},401);const [p,s]=m[1].split('.');if(!p||s!==await hmac(p,env.SESSION_SECRET))return j({erro:'Sessão inválida.'},401);try{if(JSON.parse(atob(p)).e<Date.now())throw 0}catch{return j({erro:'Sessão expirada.'},401)}return null}
+async function guard(req,env){const m=(req.headers.get('Cookie')||'').match(/(?:^|;\s*)nexa_session=([^;]+)/);if(!m)return j({erro:'Faça login para continuar.'},401);const [p,s]=m[1].split('.');if(!p||s!==await hmac(p,env.SESSION_SECRET))return j({erro:'Sessão inválida.'},401);try{if(JSON.parse(atob(p)).e<Date.now())throw 0}catch{return j({erro:'Sessão expirada.'},401)}return null}
 function cookie(v,age=MAX_AGE){return 'nexa_session='+v+'; Max-Age='+age+'; Path=/; HttpOnly; Secure; SameSite=Lax'}
 export default {async fetch(req,env){
  const u=new URL(req.url),p=u.pathname;
