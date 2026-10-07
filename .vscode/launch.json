@@ -5,7 +5,7 @@
       "name": "NEXA — Cloudflare Worker",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev",
+      "command": "npm run dev:f5",
       "cwd": "${workspaceFolder}",
       "serverReadyAction": {
         "pattern": "Ready on http://127.0.0.1:([0-9]+)",
