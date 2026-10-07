@@ -1,1 +1,13 @@
-{"name":"nexa","private":true,"version":"1.0.0","scripts":{"dev":"wrangler dev","deploy":"wrangler deploy"},"devDependencies":{"wrangler":"^4.20.0"}}
+{
+  "name": "nexa",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "dev:f5": "npm install --no-audit --no-fund && npm run dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.20.0"
+  }
+}
