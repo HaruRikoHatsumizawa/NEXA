@@ -134,9 +134,7 @@ async function mostrarBudget(file){const banner=document.getElementById('budget-
    o processamento pandas/openpyxl por SheetJS no navegador e persiste no D1. */
 (function(){
 const nativeFetch=window.fetch.bind(window);
-const A={data:['data','date','transaction date','posting date','fecha','datum','date de transaction','date comptable'],ano:['ano','year','ejercicio','jahr','annee'],mes:['mes','month','monat','mois'],categoria:['categoria','category','expense category','cost center','cost centre','account','rubro','nature','kategorie','kostenart','department','division','business unit','supplier','vendor','supplier name','vendor name','proveedor','fornecedor','fournisseur','lieferant'],valor:['valor','valor r</html>
-,'valor total','total','amount','amount actual','actual amount','expense','expenses','spend','expenditure','cost','costs','importe','monto','gasto','montant','depense','depenses','betrag','ausgabe','ausgaben'],budget:['budget','budget r</html>
-,'budget amount','budgeted amount','planned amount','plan amount','presupuesto','orçamento','orcamento','montant budget','budget alloue','planwert','soll'],tipo:['tipo','type','kind','nature type','typ','classe']};
+const A={data:['data','date','transaction date','posting date','fecha','datum','date de transaction','date comptable'],ano:['ano','year','ejercicio','jahr','annee'],mes:['mes','month','monat','mois'],categoria:['categoria','category','expense category','cost center','cost centre','account','rubro','nature','kategorie','kostenart','department','division','business unit','supplier','vendor','supplier name','vendor name','proveedor','fornecedor','fournisseur','lieferant'],valor:['valor','valor por kwh','preco por kwh','custo','custos','custo mensal','custo total','valor total','total','amount','amount actual','actual amount','expense','expenses','spend','expenditure','cost','costs','importe','monto','gasto','montant','depense','depenses','betrag','ausgabe','ausgaben'],budget:['budget','budget amount','budgeted amount','planned amount','plan amount','presupuesto','orçamento','orcamento','montant budget','budget alloue','planwert','soll'],tipo:['tipo','type','kind','nature type','typ','classe']};
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function map(cols){const out={};for(const c of cols){const n=norm(c);for(const k in A)if(!out[k]&&A[k].some(a=>n===norm(a)||n.includes(norm(a))))out[k]=c}return out}
 function num(v){if(v==null||v==='')return null;if(typeof v==='number')return Number.isFinite(v)?v:null;let s=String(v).trim(),neg=s.startsWith('(')&&s.endsWith(')');s=s.replace(/^\(|\)$/g,'').replace(/USD|EUR|BRL|CAD|AUD|GBP|CHF|JPY|CNY|INR|US\$|R\$|[$€£¥]/gi,'').replace(/\s/g,'');if(/[A-Za-z]/.test(s)||!s)return null;if(s.includes(',')&&s.includes('.'))s=s.lastIndexOf(',')>s.lastIndexOf('.')?s.replaceAll('.','').replace(',','.'):s.replaceAll(',','');else if(s.includes(',')){const n=s.length-s.lastIndexOf(',')-1;s=n===1||n===2?s.replace(',','.'):s.replaceAll(',','')}else if((s.match(/\./g)||[]).length>1){const p=s.split('.');s=p.slice(0,-1).join('')+'.'+p.at(-1)}else if(s.includes('.')&&s.length-s.lastIndexOf('.')-1===3)s=s.replace('.','');const x=Number(s);return Number.isFinite(x)?(neg?-x:x):null}
@@ -190,10 +188,10 @@ function analyze(wb,name){
    const vals=rs.map(r=>r[c]).filter(v=>v!=null&&v!=='');
    const parsed=vals.map(num).filter(v=>v!=null);
    const rate=parsed.length/(vals.length||1);
-   const currency=vals.filter(v=>typeof v==='string'&&/(R\\$|US\\$|[$€£¥]|BRL|USD|EUR)/i.test(v)).length/(vals.length||1);
+   const currency=vals.filter(v=>typeof v==='string'&&/(R[$]|US[$]|[$€£¥]|BRL|USD|EUR)/i.test(v)).length/(vals.length||1);
    const n=norm(c);
    const totalLike=/(custo mensal|monthly cost|custo total|valor total|total|faturamento|receita|revenue|expense|despesa|gasto|saldo|amount|cost|custo|valor|preco|price|bill)/i.test(n);
-   const unitLike=/(por kwh|\\/kwh|por unidade|unitario|unit price|price per|tarifa|taxa|rate)/i.test(n);
+   const unitLike=/(por kwh|kwh|por unidade|unitario|unit price|price per|tarifa|taxa|rate)/i.test(n);
    const score=rate*3+currency*4+(totalLike?2:0)-(unitLike?2.5:0);
    if(rate>=.35&&(!best||score>best.score))best={c,score,rate};
   }
