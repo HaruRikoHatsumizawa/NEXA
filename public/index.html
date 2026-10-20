@@ -148,8 +148,8 @@ function rows(ws){
  let headerIndex=0,bestScore=-1;
  for(let i=0;i<Math.min(15,grid.length);i++){
   const cells=grid[i].filter(v=>!empty(v));if(cells.length<2)continue;
-  const kinds=new Set(cells.map(known).filter(Boolean));
-  const score=kinds.size*5+cells.length*.15;
+  const matches=cells.map(known).filter(Boolean).length;
+  const score=matches*5+cells.length*.15;
   if(score>bestScore){bestScore=score;headerIndex=i}
  }
  const header=(grid[headerIndex]||[]).map((v,i)=>empty(v)?'Coluna '+(i+1):String(v).trim());
